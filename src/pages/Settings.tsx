@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Form, Input, Button, Typography, message, Divider, Row, Col, Alert } from 'antd';
-import { SettingOutlined, KeyOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { KeyOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useSettings } from '../contexts/SettingsContext';
 
 const { Title, Text } = Typography;

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Button, Input, Typography, Row, Col, message, Space, Tag } from 'antd';
-import { EnvironmentOutlined, SearchOutlined, ClearOutlined, ReloadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Button, Input, message } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-const { Title, Text } = Typography;
+
 
 // 声明高德地图API
 declare global {
@@ -50,9 +50,9 @@ const RoutePlanning: React.FC = () => {
   const drivingInstance = useRef<any>(null);
   const currentRoute = useRef<any>(null);
 
-  // 高德地图配置
-  const AMAP_KEY = '2c89a4d2b5f19611675686d806804fda';
-  const AMAP_SECRET = 'd7dceb7fb6dfe68fde8b003237a5391d';
+  // 高德地图配置（从环境变量读取）
+  const AMAP_KEY = (import.meta as any).env?.VITE_AMAP_API_KEY || '';
+  const AMAP_SECRET = (import.meta as any).env?.VITE_AMAP_SECURITY_JS_CODE || '';
 
   useEffect(() => {
     // 设置安全密钥 - 必须在API加载前设置

@@ -10,7 +10,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, name?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, name?: string) => Promise<{ error: any; session?: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signUp = async (email: string, password: string, name?: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -101,7 +101,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
       });
-      return { error };
+      // Supabase行为：若 identities 为空数组，表示该邮箱已存在（可能返回200且不报错，仅重发验证邮件）
+      const identities = (data as any)?.user?.identities;
+      if (!error && Array.isArray(identities) && identities.length === 0) {
+        return { error: { message: '该邮箱已注册' }, session: undefined };
+      }
+      return { error, session: (data as any)?.session };
     } catch (error) {
       return { error };
     }

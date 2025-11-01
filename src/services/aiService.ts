@@ -32,7 +32,7 @@ export interface TravelItinerary {
 }
 
 export class AIService {
-  constructor(accessKeyId: string, accessKeySecret: string, dashscopeApiKey: string) {
+  constructor(_accessKeyId: string, _accessKeySecret: string, _dashscopeApiKey: string) {
     // 参数保留用于未来扩展
     console.log('AIService initialized with keys');
   }
@@ -101,10 +101,10 @@ export class AIService {
   }
 
   private async callDashScopeAPI(request: TravelRequest): Promise<TravelItinerary> {
-    const apiKey = (import.meta as any).env?.VITE_DASHSCOPE_API_KEY || 'sk-8608f83299f24a1c838967a928907041';
+    const apiKey = (import.meta as any).env?.VITE_DASHSCOPE_API_KEY;
     
     if (!apiKey) {
-      console.warn('⚠️ DashScope API Key未配置，使用模拟响应');
+      console.warn('⚠️ DashScope API Key未配置');
       throw new Error('API Key未配置');
     }
 
@@ -154,7 +154,8 @@ export class AIService {
     }
   }
 
-  private getMockResponse(): string {
+  // 移除未使用的方法以避免未使用告警
+  /* private getMockResponse(): string {
     // 生成更个性化的模拟数据
     const destinations = ['日本东京', '韩国首尔', '泰国曼谷', '新加坡', '马来西亚吉隆坡'];
     const activities = [
@@ -199,7 +200,7 @@ export class AIService {
         "准备必要的旅行证件"
       ]
     });
-  }
+  } */
 
   private parseTravelResponse(response: string): TravelItinerary {
     try {
@@ -416,7 +417,7 @@ export class AIService {
     const duration = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     
     // 根据目的地生成不同的活动
-    const activitiesByDestination = {
+    const activitiesByDestination: Record<string, Array<{ time: string; activity: string; location: string; description: string; cost: number }>> = {
       '北京': [
         { time: "08:00", activity: "天安门广场", location: "天安门广场", description: "观看升旗仪式，感受庄严氛围", cost: 0 },
         { time: "10:00", activity: "故宫博物院", location: "故宫", description: "参观明清两代皇宫，了解历史文化", cost: 60 },
@@ -459,8 +460,8 @@ export class AIService {
       });
     }
     
-    const totalCost = days.reduce((sum, day) => 
-      sum + day.activities.reduce((daySum, activity) => daySum + activity.estimatedCost, 0), 0
+    const totalCost = days.reduce((sum: number, day: { activities: Array<{ estimatedCost: number }> }) => 
+      sum + day.activities.reduce((daySum: number, activity: { estimatedCost: number }) => daySum + activity.estimatedCost, 0), 0
     );
     
     // 根据目的地生成个性化建议
@@ -482,7 +483,7 @@ export class AIService {
     return result;
   }
 
-  private getDestinationRecommendations(destination: string, budgetLevel: string): string[] {
+  private getDestinationRecommendations(destination: string, _budgetLevel: string): string[] {
     const baseRecommendations = [
       "建议提前预订酒店和交通",
       "注意当地天气情况，准备合适的衣物",
@@ -490,7 +491,7 @@ export class AIService {
       "准备必要的旅行证件"
     ];
     
-    const destinationSpecific = {
+    const destinationSpecific: Record<string, string[]> = {
       '北京': [
         "建议购买北京一卡通，方便乘坐公共交通",
         "故宫需要提前预约，建议网上购票",
@@ -511,7 +512,7 @@ export class AIService {
     return [...baseRecommendations, ...(destinationSpecific[destination] || [])];
   }
 
-  private generateDefaultPlan(request: TravelRequest): TravelItinerary {
+  /* private generateDefaultPlan(request: TravelRequest): TravelItinerary {
     const days = [];
     const startDate = new Date(request.startDate);
     const endDate = new Date(request.endDate);
@@ -578,7 +579,7 @@ export class AIService {
         "准备必要的旅行证件"
       ]
     };
-  }
+  } */
 
   // 预算分析
   async analyzeBudget(itinerary: TravelItinerary, actualExpenses: number[]): Promise<{

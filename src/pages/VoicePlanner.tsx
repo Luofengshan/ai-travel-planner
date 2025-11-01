@@ -165,7 +165,7 @@ React.useEffect(() => {}, []);
 	const callIAT = async (pcmData: Int16Array) => {
 		return new Promise<void>((resolve, reject) => {
 			const host = 'wss://iat-api.xfyun.cn/v2/iat';
-			const date = new Date().toGMTString();
+            const date = new Date().toUTCString();
 			const signatureOrigin = `host: iat-api.xfyun.cn\ndate: ${date}\nGET /v2/iat HTTP/1.1`;
 			const sha = CryptoJS.HmacSHA256(signatureOrigin, XUNFEI_API_SECRET);
 			const signature = CryptoJS.enc.Base64.stringify(sha);

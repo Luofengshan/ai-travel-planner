@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import https from 'https';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = 3001;
@@ -12,7 +15,10 @@ app.use(express.json());
 // 阿里云DashScope API代理
 app.post('/api/dashscope', async (req, res) => {
   try {
-    const { prompt, apiKey } = req.body;
+    let { prompt, apiKey } = req.body;
+    if (!apiKey) {
+      apiKey = process.env.VITE_DASHSCOPE_API_KEY || '';
+    }
     
     if (!apiKey) {
       return res.status(400).json({ error: 'API Key is required' });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, message, Space } from 'antd';
+import { Form, Input, Button, Card, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -24,11 +24,19 @@ const Register: React.FC = () => {
 
     setLoading(true);
     try {
-      const { error } = await signUp(values.email, values.password, values.name);
+      const { error, session } = await signUp(values.email, values.password, values.name);
       if (error) {
-        message.error('注册失败: ' + error.message);
+        const msg = (error as any)?.message || '';
+        if (/already|registered|exists/i.test(msg)) {
+          message.error('该邮箱已注册，请直接登录');
+        } else {
+          message.error('注册失败: ' + msg);
+        }
+      } else if (session) {
+        message.success('注册成功，已自动登录');
+        navigate('/dashboard');
       } else {
-        message.success('注册成功！请检查邮箱验证链接');
+        message.success('注册成功！如已启用邮箱验证，请查收验证邮件');
         navigate('/login');
       }
     } catch (error) {
